@@ -1,3 +1,5 @@
+Mac Xcode version:
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -127,6 +129,275 @@ int main()
                 printf("Enter a word.\n");
                 scanf("%s", newentry);
                 fpurge(stdin);
+                insertll(current, newentry, strlen(newentry));
+                
+                for (int i = 1; i < ndes; i++) {
+                    currNode = prevNode = head;
+                    while (currNode != NULL && currNode->next != NULL) {
+                        if (strcmp((currNode->data), (currNode->next->data)) > 0) {
+                            tempNode = currNode->next;
+                            currNode->next = currNode->next->next;
+                            tempNode->next = currNode;
+                            if (head == currNode) {
+                                head = prevNode = tempNode;
+                                currNode = tempNode;
+                            } else {
+                                prevNode->next = tempNode;
+                                currNode = tempNode;
+                            }
+                        }
+                        prevNode = currNode;
+                        currNode = currNode->next;
+                    }
+                }
+                
+                memset(&newentry, '\0', 25);
+                displayll();
+                
+                input = 0;
+                break;
+            
+            case 4:
+                current = next = head;
+                    while (current != NULL) {
+                        next = current->next;
+                        current = NULL;
+                        printf("%s\n", current->data);
+                        current = next;
+                    }
+                head = &node[0];
+                input = 0;
+                break;
+
+            case 5:
+                printf("Exit\n\n");
+                input = 1 - 5;
+                break;
+                
+            default:
+                printf("\n\nError! Selection is not supported.\n\n");
+                input = 0;
+                break;
+        }
+    }
+}
+
+void displayll(void){
+    tempNode = head;
+    while (tempNode != NULL) {
+        printf("%s\n", tempNode->data);
+        printf("%lu\n", tempNode->length);
+        tempNode = tempNode->next;
+    }
+    tempNode = head;
+}
+
+void parsestring(char sentence[500]){
+    char *ptr = sentence;
+    for (indexctr = 0; indexctr<= strlen(sentence); indexctr++)
+    {
+        if (ptr[indexctr] == ' ' || ptr[indexctr] == '\0')
+        {
+            words[totalwords][wordindex] = '\0';
+            totalwords++;
+            wordindex = 0;
+        }
+        else if (isalpha(ptr[indexctr]) != 0)
+        {
+            words[totalwords][wordindex] = ptr[indexctr];
+            wordindex++;
+        }
+    }
+}
+
+void createll(char words[20][25]){
+    for (int i = 0; i < totalwords; i++){
+        strncpy(node[i].data, words[i], 4);
+        node[i].next = NULL;
+        if (i > 0) {
+            node[i - 1].next = &node[i];
+        }
+    }
+}
+
+void addlength(char words[20][25], int totalwords){
+    for (int i = 0; i < totalwords; i++) {
+        node[i].length = strlen(words[i]);
+    }
+}
+
+void sortll(void){
+for (int i = 1; i < totalwords; i++) {
+    currNode = prevNode = head;
+    while (currNode != NULL && currNode->next != NULL) {
+        if (strcmp((currNode->data), (currNode->next->data)) > 0) {
+            tempNode = currNode->next;
+            currNode->next = currNode->next->next;
+            tempNode->next = currNode;
+            if (head == currNode) {
+                head = prevNode = tempNode;
+                currNode = tempNode;
+            } else {
+                prevNode->next = tempNode;
+                currNode = tempNode;
+            }
+        }
+        prevNode = currNode;
+        currNode = currNode->next;
+    }
+}
+ndes = totalwords;
+memset(&totalwords, 0, 2);
+}
+
+void freearray(char words[20][25]){
+    
+    for (int i = 0; i < 20; i++) {
+        memset(words[i], '\0', 25);
+        printf("%s", words[i]);
+    }
+}
+
+void insertll(struct Node* new, char word[25], unsigned long length){
+    ndes++;
+    node[ndes].length = length;
+    node[ndes].next = new->next;
+    new->next = &node[ndes];
+    strncpy(node[ndes].data, word, 4);
+}
+
+
+Linux Version:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <unistd.h>
+
+
+
+struct Node {
+    char data[5];
+    unsigned long length;
+    struct Node* next;
+};
+
+struct Node node[30];
+
+char sentence[500], words[20][25], search[25], zearch[5];
+int ndes;
+char newentry[25];
+struct Node *head = &node[0];
+struct Node *prevNode, *currNode, *tempNode;
+struct Node *current, *previous, *next;
+int indexctr = 0, wordindex = 0, totalwords = 0;
+int searchmode = 0;
+
+void parsestring(char sentence[500]);
+void createll(char words[20][25]);
+void addlength(char words[20][25], int totalwords);
+void sortll(void);
+void freearray(char words[20][25]);
+void displayll(void);
+void insertll(struct Node* new, char word[25], unsigned long length);
+
+
+int main()
+{
+    int input = 0;
+    
+    while (input >= 0) {
+        
+        printf("Enter 1 into the console and press ENTER to input a sentence and have it returned in alphabetical order:\n\n");
+        
+        printf("Enter 2 into the console and press ENTER to search for a word and return the entry that matches (up to the first 4 letters):\n\n");
+        
+        printf("Enter 3 into the console and press ENTER to add a new entry into the linked list alphabetically:\n\n");
+        
+        printf("Enter 4 into the console and press ENTER to initialize (delete) the current linked list:\n\n");
+        
+        printf("Enter 5 into the console and press ENTER to Exit the program:\n\n");
+        
+        scanf("%d", &input);
+        
+        __fpurge(stdin);
+        
+        switch (input) {
+
+            case 1:
+                printf("\nEnter a free form sentence\n\n");
+                fgets(sentence, sizeof(sentence), stdin);
+                parsestring(sentence);
+                createll(words);
+                addlength(words, totalwords);
+                sortll();
+                freearray(words);
+                displayll();
+                input = 0;
+                break;
+
+            case 2:
+                printf("Would you like to use a case sensitive or case insensitive search mode?  Enter 1 for sensitive or 2 for insensitive:\n\n");
+                scanf("%d", &searchmode);
+                __fpurge(stdin);
+                tempNode = head;
+                
+                switch (searchmode) {
+                    case 1:
+                        printf("Search thru the linked list by entering a word:\n");
+                        scanf("%s", search);
+                        __fpurge(stdin);
+                        strncpy(zearch, search, 4);
+                        while (tempNode != NULL) {
+                            if (strcmp(zearch,tempNode->data) == 0) {
+                                printf("%s\n", tempNode->data);
+                                tempNode = tempNode->next;
+                                break;
+                            }
+                            if (tempNode->next == NULL) {
+                                printf("word not found in linked list\n");
+                                tempNode = tempNode->next;
+                            }
+                            else
+                                tempNode = tempNode->next;
+                        }
+                        tempNode = head;
+                        break;
+                    
+                    case 2:
+                        printf("Search thru the linked list by entering a word:\n");
+                        scanf("%s", search);
+                        __fpurge(stdin);
+                        strncpy(zearch, search, 4);
+                        while (tempNode != NULL) {
+                            if (strcasecmp(zearch,tempNode->data) == 0) {
+                                printf("%s\n", tempNode->data);
+                                tempNode = tempNode->next;
+                                break;
+                            }
+                            if (tempNode->next == NULL) {
+                                printf("word not found in linked list\n");
+                                tempNode = tempNode->next;
+                            }
+                            else
+                                tempNode = tempNode->next;
+                        }
+                    tempNode = head;
+                    break;
+                        
+                    default:
+                        break;
+                }
+                
+                input = 0;
+                break;
+                
+            case 3:
+                current = head;
+                printf("Enter a word.\n");
+                scanf("%s", newentry);
+                __fpurge(stdin);
                 insertll(current, newentry, strlen(newentry));
                 
                 for (int i = 1; i < ndes; i++) {
